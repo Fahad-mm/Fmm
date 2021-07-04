@@ -1,0 +1,34 @@
+import RPi.GPIO as GPIO
+import time
+import thingspeak
+
+sensor = 7;
+relay = 16;
+channel_id =1434639# CHANNEL ID HERE
+write_key = 'J2HQWTLZ8L23T499' # WRITE KEY HERE
+
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(sensor, GPIO.IN)
+GPIO.setup(relay, GPIO.OUT)
+GPIO.setwarnings(False)
+ 
+status=0;
+#watering=0;
+GPIO.output(relay, False)
+def irrigation(channel):
+    if GPIO.input(sensor):
+        print("the water is LOW");
+        GPIO.output(relay, False)
+        status=0;
+    else:    
+        print("the water is HIGH");
+        GPIO.output(relay, True)
+        status=1;
+    response = channel.update({'field1': status})
+    
+    
+if __name__ == "__main__":
+    channel = thingspeak.Channel(channel_id,write_key) 
+while True:
+    irrigation(channel);
+    time.sleep(5)
